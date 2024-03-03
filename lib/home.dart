@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:food_recipe/model.dart';
+import 'package:food_recipe/search.dart';
 import 'package:http/http.dart';
 import 'dart:developer';
 
@@ -12,8 +13,10 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
+  bool isLoading = true;
   List<RecipeModel> recipeList = <RecipeModel>[];
   TextEditingController searchController = new TextEditingController();
+  List recipeCatList = [{"imgUrl": "https://media.istockphoto.com/id/1451840010/photo/rajma-chawal-an-indian-food.webp?b=1&s=170667a&w=0&k=20&c=d9IH7ZcE7UKCy4y--inbAK5IhOfZfrQ5YLDPpw89wLA=", "heading": "North Indian"},{"imgUrl": "https://media.istockphoto.com/id/1292563627/photo/assorted-south-indian-breakfast-foods-on-wooden-background-ghee-dosa-uttappam-medhu-vada.webp?b=1&s=170667a&w=0&k=20&c=qpDMBxf0FbkwLG7ExT3bwTpHDdkR_KmuBoWN-AyUxEM=", "heading": "South Indian"},{"imgUrl": "https://media.istockphoto.com/id/1144501138/photo/manchurian-hakka-schezwan-noodles-popular-indochinese-food-served-in-a-bowl-selective-focus.webp?b=1&s=170667a&w=0&k=20&c=g_HX36USTNdxNgEdlSUGgJ_JEVw18ZmlTSgWqYM_0OI=", "heading": "Chinese"},{"imgUrl": "https://media.istockphoto.com/id/1198079266/photo/deluxe-pizza-with-pepperoni-sausage-mushrooms-and-peppers.webp?b=1&s=170667a&w=0&k=20&c=Jmt_A91qLtE2YIDbBxYdqaCJ397haq0ZzWPHLlhtQw0=", "heading": "Italian"},{"imgUrl": "https://images.unsplash.com/photo-1580822184713-fc5400e7fe10?w=700&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8SmFwYW5lc2UlMjBmb29kfGVufDB8fDB8fHww", "heading": "Japanese"}];
 
   getRecipe(String query) async {
     String url =
@@ -26,6 +29,9 @@ class _HomeState extends State<Home> {
       RecipeModel recipeModel = new RecipeModel();
       recipeModel = RecipeModel.fromMap(element["recipe"]);
       recipeList.add(recipeModel);
+      setState(() {
+        isLoading = false;
+      });
       log(recipeList.toString());
     });
 
@@ -73,7 +79,7 @@ class _HomeState extends State<Home> {
                                 "") {
                               print("Blank search");
                             } else {
-                              getRecipe(searchController.text);
+                              Navigator.push(context, MaterialPageRoute(builder: (context)=> Search(searchController.text)));
                             }
                           },
                           child: Container(
@@ -114,7 +120,7 @@ class _HomeState extends State<Home> {
                   ),
                 ),
                 Container(
-                  child: ListView.builder(
+                  child: isLoading ? CircularProgressIndicator() :  ListView.builder(
                       physics: NeverScrollableScrollPhysics(),
                       shrinkWrap: true,
                       itemCount: recipeList.length,
@@ -179,6 +185,62 @@ class _HomeState extends State<Home> {
                           ),
                         );
                       }),
+                ),
+                Container(
+                  height: 100,
+                  child: ListView.builder(
+                    itemCount: recipeCatList.length,
+                      shrinkWrap: true,
+                      scrollDirection: Axis.horizontal,
+                      itemBuilder: (context, index){
+                      return Container(
+                        child: InkWell(
+                          onTap: () {},
+                          child: Card(
+                            margin: EdgeInsets.all(20),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(18)
+                            ),
+                            elevation: 0.0,
+                            child: Stack(
+                              children: [
+                                ClipRRect(
+                                  borderRadius: BorderRadius.circular(18),
+                                  child: Image.network(recipeCatList[index]["imgUrl"],
+                                  fit: BoxFit.cover,
+                                  width: 200,
+                                  height: 250,),
+                                ),
+                                Positioned(
+                                  left: 0,
+                                    right: 0,
+                                    bottom: 0,
+                                    top: 0,
+                                    child: Container(
+                                      padding: EdgeInsets.symmetric(vertical: 5,horizontal: 10),
+                                      decoration: BoxDecoration(
+                                        color: Colors.black26,
+                                      ),
+                                      child: Column(
+                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        children: [
+                                          Text(
+                                            recipeCatList[index]["heading"],
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 25
+                                            ),
+                                          )
+                                        ],
+                                      ),
+                                    ))
+                              ],
+                            ),
+                          ),
+                        ),
+                      );
+
+                  }),
                 )
               ],
             ),
