@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:food_recipe/model.dart';
+import 'package:food_recipe/recipe.dart';
 import 'package:http/http.dart';
 import 'dart:developer';
 
@@ -139,7 +140,9 @@ class _SearchState extends State<Search> {
                           itemCount: recipeList.length,
                           itemBuilder: (context, index) {
                             return InkWell(
-                              onTap: () {},
+                              onTap: () {
+                                Navigator.push(context, MaterialPageRoute(builder: (context)=> RecipeView(recipeList[index].appurl)));
+                              },
                               child: Card(
                                 margin: EdgeInsets.all(20),
                                 shape: RoundedRectangleBorder(
